@@ -3,15 +3,25 @@ import sys
 from collections import defaultdict
 
 # Config
-INPUT_FILE = 'words.txt'
-OUTPUT_FILE = 'dictionary.json'
 MIN_LEN = 3
 MAX_LEN = 8
 
 def main():
+    # Accept input file from CLI or use default
+    INPUT_FILE = sys.argv[1] if len(sys.argv) > 1 else 'words.txt'
+    OUTPUT_FILE = 'dictionary.json'
+
+    print(f"Processing {INPUT_FILE}...")
+
     try:
-        with open(INPUT_FILE, 'r', encoding='utf-8') as f:
-            lines = f.read().splitlines()
+        # Try UTF-8 first, fall back to latin-1 if needed
+        try:
+            with open(INPUT_FILE, 'r', encoding='utf-8') as f:
+                lines = f.read().splitlines()
+        except UnicodeDecodeError:
+            print("UTF-8 decode failed, trying latin-1...")
+            with open(INPUT_FILE, 'r', encoding='latin-1') as f:
+                lines = f.read().splitlines()
     except FileNotFoundError:
         print(f"Error: {INPUT_FILE} not found.")
         sys.exit(1)

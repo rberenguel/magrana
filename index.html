@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="Fibonacci-based anagram puzzle game">
+    <meta name="description" content="Anagram puzzle game>
     <meta name="theme-color" content="#000000">
     <title>Magrana</title>
     <link rel="stylesheet" href="style.css">
@@ -25,12 +25,15 @@
                 </svg>
                 <span id="lbl-found">0</span> / <span id="lbl-req" style="color:var(--accent)">0</span>
                 <span style="font-size:0.8em; opacity:0.6">(<span id="lbl-total">0</span>)</span>
+                <i class="iconoir-info-circle info-icon" id="dict-info-btn" title="Dictionary info"></i>
             </div>
             <div class="meta-info">Level <span id="lbl-level">1</span></div>
         </div>
     </div>
     <div class="progress-container"><div id="progress" class="progress-bar"></div></div>
 </header>
+
+<div id="trophy-display"></div>
 
 <div id="board">
     <div id="zone-target" class="zone target"></div>
@@ -40,7 +43,39 @@
 <div id="found-words"></div>
 <button id="btn-next" onclick="game.nextLevel()" style="display:none">Next Level >></button>
 
+<!-- Info Modal -->
+<div id="info-modal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" id="info-modal-close">&times;</button>
+        <div class="modal-header">
+            <img src="icon.png" alt="Magrana" class="modal-icon">
+            <h2>About Magrana</h2>
+        </div>
+        <div class="modal-text">
+            <p><strong>Magrana</strong> is an anagram puzzle game where you form words from a set of letters to progress through increasingly challenging levels.</p>
+
+            <h3>Dictionary</h3>
+            <p>The word list is based on <strong>SCOWL</strong> (Spell Checker Oriented Word Lists), specifically levels 10-50, which includes common to moderately common English words.</p>
+
+            <p><em>Note: Not all possible English words are included in the dictionary. The word list is curated to exclude very obscure or rare terms.</em></p>
+
+            <p class="source-link">SCOWL by Kevin Atkinson<br>
+            <a href="http://wordlist.aspell.net/" target="_blank">wordlist.aspell.net</a></p>
+        </div>
+    </div>
+</div>
+
 <script src="haptic.js"></script>
 <script src="game.js"></script>
+<script>
+// Register service worker for PWA offline support
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registered'))
+            .catch(err => console.log('Service Worker registration failed:', err));
+    });
+}
+</script>
 </body>
 </html>

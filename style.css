@@ -73,6 +73,19 @@ header {
     color: var(--accent);
 }
 
+.info-icon {
+    font-size: 22px;
+    margin-left: 6px;
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    color: var(--accent);
+}
+
+.info-icon:hover {
+    opacity: 1;
+}
+
 .meta-info {
     font-size: 1.1rem;
     opacity: 0.7;
@@ -104,6 +117,29 @@ header {
 .zone.target {
     border: 2px dashed rgba(56, 189, 248, 0.5);
     background: rgba(56, 189, 248, 0.05);
+    transition: all 0.4s ease-out;
+}
+
+.zone.target.correct {
+    animation: correct-border-pulse 1s ease-out;
+}
+
+@keyframes correct-border-pulse {
+    0% {
+        border-color: rgba(56, 189, 248, 0.5);
+        border-style: dashed;
+        box-shadow: 0 0 0 rgba(74, 222, 128, 0);
+    }
+    50% {
+        border-color: var(--success);
+        border-style: solid;
+        box-shadow: 0 0 25px rgba(74, 222, 128, 0.8);
+    }
+    100% {
+        border-color: rgba(56, 189, 248, 0.5);
+        border-style: dashed;
+        box-shadow: 0 0 0 rgba(74, 222, 128, 0);
+    }
 }
 
 .zone.pool {
@@ -193,11 +229,6 @@ header {
     transition: none !important;
 }
 
-.tile.success {
-    background: var(--success);
-    border-color: var(--base2);
-    color: #fff;
-}
 
 /* Progress Bar */
 .progress-container {
@@ -219,6 +250,75 @@ header {
 
 .progress-bar.complete {
     background: var(--success);
+}
+
+/* Trophy Display */
+#trophy-display {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    min-height: 30px;
+    flex-wrap: wrap;
+}
+
+.trophy {
+    position: relative;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.trophy:hover {
+    transform: scale(1.15);
+}
+
+.trophy-gold {
+    color: #ffd700;
+}
+
+.trophy-silver {
+    color: #c0c0c0;
+}
+
+.trophy-bronze {
+    color: #cd7f32;
+}
+
+.trophy-emoji {
+    font-size: 1.8rem;
+    background: #1a1a1a;
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.trophy-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.trophy-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
 }
 
 #found-words {
@@ -273,4 +373,113 @@ button {
     0% { transform: scale(1); }
     50% { transform: scale(1.03); }
     100% { transform: scale(1); }
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    color: var(--fg);
+    padding: 2rem;
+    border-radius: 16px;
+    max-width: 90%;
+    width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid #333;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--fg);
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    opacity: 1;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 1.5rem;
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+}
+
+.modal-content h2 {
+    margin: 0;
+    color: var(--accent);
+    font-size: 1.5rem;
+}
+
+.modal-content h3 {
+    color: var(--accent);
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-text p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.modal-text em {
+    opacity: 0.8;
+}
+
+.source-link {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-top: 1.5rem;
+}
+
+.source-link a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.source-link a:hover {
+    text-decoration: underline;
 }

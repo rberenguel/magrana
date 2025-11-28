@@ -1,18 +1,19 @@
-const CACHE_NAME = "flux-cache-v0.1.2";
+const CACHE_NAME = "magrana-cache-v0.1.0";
 const CACHE_FILES = [
+  "./dict/dictionary.json",
+  "./favicon.ico",
   "./fonts/InterDisplay-Bold.woff2",
   "./fonts/InterDisplay-Italic.woff2",
   "./fonts/InterDisplay-Regular.woff2",
-  "./fonts/SixtyFour.woff2",
-  "./fonts/Sixtyfour.woff2",
+  "./fonts/iconoir/iconoir.css",
+  "./fonts/iconoir/iconoir.woff2",
   "./fonts/inter.css",
-  "./fonts/sixtyfour.css",
+  "./game.js",
+  "./haptic.js",
+  "./icon.png",
   "./index.html",
-  "./libs/pixi8.1.5.min.js",
-  "./main.js",
   "./manifest.json",
-  "./media/favicon.ico",
-  "./media/icon.png",
+  "./style.css",
 ];
 
 // Install event: opens a cache and adds the core files to it.

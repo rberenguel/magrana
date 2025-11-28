@@ -24,6 +24,24 @@ const game = {
     touchStartPos: { x: 0, y: 0 },
     DRAG_THRESHOLD: 5,
 
+    // Trophy tracking
+    trophies: [],
+
+    // Special word emojis
+    specialWords: {
+        'cats': '🐈‍⬛',
+        'kitten': '🐈‍⬛',
+        'meow': '🐈‍⬛',
+        'dogs': '🐕',
+        'bark': '🐕',
+        'dog': '🐕',
+        'wool': '🧶',
+        'clock': '🕐'
+    },
+
+    // Debug mode
+    debugMode: new URLSearchParams(window.location.search).has('debug'),
+
     async init() {
         try {
             const res = await fetch('dict/dictionary.json');
@@ -74,6 +92,21 @@ const game = {
     },
 
     nextLevel() {
+        // Award trophy before moving to next level
+        const totalWords = this.solutions.size;
+        const foundWords = this.found.size;
+        const sequentialLevel = (this.metaLevel - 1) * 3 + (this.subLevel + 1);
+
+        if (foundWords === totalWords) {
+            this.trophies.push({ level: sequentialLevel, words: foundWords, type: 'gold' });
+        } else if (foundWords === totalWords - 1) {
+            this.trophies.push({ level: sequentialLevel, words: foundWords, type: 'silver' });
+        } else if (foundWords === totalWords - 2) {
+            this.trophies.push({ level: sequentialLevel, words: foundWords, type: 'bronze' });
+        }
+
+        this.updateTrophyDisplay();
+
         this.subLevel++;
         if (this.subLevel > 2) {
             this.subLevel = 0;
@@ -81,6 +114,59 @@ const game = {
         }
         this.calcLevelConfig();
         this.startRound();
+    },
+
+    updateTrophyDisplay() {
+        const container = document.getElementById('trophy-display');
+        container.innerHTML = '';
+
+        if (this.trophies.length === 0) return;
+
+        this.trophies.forEach((trophy, idx) => {
+            const trophyEl = document.createElement('div');
+
+            if (trophy.type === 'emoji') {
+                trophyEl.className = 'trophy trophy-emoji';
+                trophyEl.textContent = trophy.emoji;
+                trophyEl.dataset.level = trophy.level;
+                trophyEl.dataset.word = trophy.word;
+            } else {
+                trophyEl.className = `trophy trophy-${trophy.type}`;
+                trophyEl.innerHTML = '<i class="iconoir-trophy"></i>';
+                trophyEl.dataset.level = trophy.level;
+                trophyEl.dataset.words = trophy.words;
+                trophyEl.dataset.total = trophy.words + (trophy.type === 'gold' ? 0 : trophy.type === 'silver' ? 1 : 2);
+            }
+
+            // Mobile-friendly: tap to show info
+            trophyEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showTrophyInfo(trophy, trophyEl);
+            });
+
+            container.appendChild(trophyEl);
+        });
+    },
+
+    showTrophyInfo(trophy, element) {
+        // Remove any existing tooltip
+        document.querySelectorAll('.trophy-tooltip').forEach(el => el.remove());
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'trophy-tooltip';
+
+        if (trophy.type === 'emoji') {
+            tooltip.textContent = `Level ${trophy.level}: "${trophy.word}"`;
+        } else {
+            const total = trophy.words + (trophy.type === 'gold' ? 0 : trophy.type === 'silver' ? 1 : 2);
+            tooltip.textContent = `Level ${trophy.level}: ${trophy.words}/${total} words`;
+        }
+
+        element.appendChild(tooltip);
+
+        // Remove tooltip after 2 seconds or on next click
+        setTimeout(() => tooltip.remove(), 2000);
+        document.addEventListener('click', () => tooltip.remove(), { once: true });
     },
 
     // --- Round Generation ---
@@ -166,6 +252,13 @@ const game = {
     setupBoard(chars) {
         document.getElementById('lbl-total').innerText = this.solutions.size;
 
+        // Debug mode: show all solutions
+        if (this.debugMode) {
+            console.log('=== DEBUG MODE ===');
+            console.log('All solutions for this level:', Array.from(this.solutions).sort());
+            console.log('Total solutions:', this.solutions.size);
+        }
+
         const total = this.N + this.M;
         this.grid = new Array(total).fill(null);
         this.tiles = chars.map((c, i) => ({ id: 't'+i, char: c.toUpperCase() }));
@@ -231,14 +324,29 @@ const game = {
             tag.appendChild(infoIcon);
             document.getElementById('found-words').prepend(tag); // Newest first
 
-            // Visuals
-            for(let i=0; i<this.N; i++) {
-                const el = document.getElementById(this.grid[i]);
-                if(el) {
-                    el.classList.add('success');
-                    setTimeout(()=>el.classList.remove('success'), 400);
+            // Check for special word emoji trophy
+            if (this.specialWords[word]) {
+                const sequentialLevel = (this.metaLevel - 1) * 3 + (this.subLevel + 1);
+                const emoji = this.specialWords[word];
+
+                // Check if we already have this emoji from this level
+                const alreadyHas = this.trophies.some(t => t.type === 'emoji' && t.emoji === emoji && t.level === sequentialLevel);
+                if (!alreadyHas) {
+                    this.trophies.push({
+                        level: sequentialLevel,
+                        word: word,
+                        type: 'emoji',
+                        emoji: emoji
+                    });
+                    this.updateTrophyDisplay();
                 }
             }
+
+            // Animate target zone border
+            const targetZone = document.getElementById('zone-target');
+            targetZone.classList.add('correct');
+            setTimeout(() => targetZone.classList.remove('correct'), 1000);
+
             this.updateStats();
         }
     },
@@ -336,3 +444,34 @@ const game = {
 };
 
 game.init();
+
+// Info modal handlers
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('info-modal');
+    const openBtn = document.getElementById('dict-info-btn');
+    const closeBtn = document.getElementById('info-modal-close');
+
+    openBtn.addEventListener('click', () => {
+        if (typeof triggerHaptic === 'function') {
+            triggerHaptic(50);
+        }
+        modal.classList.add('visible');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        if (typeof triggerHaptic === 'function') {
+            triggerHaptic(50);
+        }
+        modal.classList.remove('visible');
+    });
+
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            if (typeof triggerHaptic === 'function') {
+                triggerHaptic(50);
+            }
+            modal.classList.remove('visible');
+        }
+    });
+});
