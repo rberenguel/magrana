@@ -1,0 +1,17 @@
+{
+  "short_name": "Magrana",
+  "version": "0.1.0",
+  "name": "Magrana",
+  "description": "Fibonacci-based anagram puzzle game",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}

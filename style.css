@@ -1,0 +1,205 @@
+@import url('./fonts/inter.css');
+
+:root {
+    --bg: #000000;
+    --fg: #e2e8f0;
+    --accent: #38bdf8;
+    --slot: #334155;
+    --tile: #f8fafc;
+    --tile-text: #0f172a;
+    --success: #4ade80;
+    --gold: #facc15;
+}
+
+body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+header {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.app-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.icon-search {
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+}
+
+.meta-info {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-align: center;
+}
+
+#board {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 95%;
+}
+
+.zone {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.zone.target {
+    border: 2px dashed rgba(56, 189, 248, 0.5);
+    background: rgba(56, 189, 248, 0.05);
+}
+
+.slot {
+    width: 50px;
+    height: 50px;
+    background: var(--slot);
+    border-radius: 8px;
+    position: relative;
+}
+
+.tile {
+    width: 50px;
+    height: 50px;
+    background: var(--tile);
+    color: var(--tile-text);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    touch-action: none;
+    transition: transform 0.1s;
+}
+
+.tile:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+    z-index: 20;
+}
+
+.tile.dragging {
+    position: fixed;
+    z-index: 1000;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.tile.success {
+    background: var(--success);
+    color: #fff;
+}
+
+/* Progress Bar */
+.progress-container {
+    width: 80%;
+    max-width: 400px;
+    height: 6px;
+    background: #334155;
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.progress-bar.complete {
+    background: var(--success);
+}
+
+#found-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 90%;
+    max-width: 600px;
+    padding: 10px;
+    height: 100px;
+    align-content: flex-start;
+    overflow-y: auto;
+}
+
+.tag {
+    background: #334155;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+button {
+    margin-top: 10px;
+    padding: 12px 24px;
+    border: none;
+    background: var(--success);
+    color: #000;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
