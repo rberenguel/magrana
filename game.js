@@ -19,6 +19,11 @@ const game = {
     solutions: new Set(),
     found: new Set(),
 
+    // Drag state
+    isDragging: false,
+    touchStartPos: { x: 0, y: 0 },
+    DRAG_THRESHOLD: 5,
+
     async init() {
         try {
             const res = await fetch('dict/dictionary.json');
@@ -189,8 +194,9 @@ const game = {
                 el.className = 'tile';
                 el.id = t.id;
                 el.textContent = t.char;
+                el.onclick = (e) => this.handleTileClick(e, idx);
                 el.onmousedown = (e) => this.dragStart(e, idx);
-                el.ontouchstart = (e) => this.dragStart(e, idx);
+                el.ontouchstart = (e) => this.touchStart(e, idx);
                 slot.appendChild(el);
             }
             if (idx < this.N) zT.appendChild(slot); else zP.appendChild(slot);
@@ -208,7 +214,21 @@ const game = {
 
             const tag = document.createElement('div');
             tag.className = 'tag';
-            tag.textContent = word.toUpperCase();
+
+            const wordSpan = document.createElement('span');
+            wordSpan.textContent = word.toUpperCase();
+
+            const infoIcon = document.createElement('i');
+            infoIcon.className = 'iconoir-info-circle';
+            infoIcon.title = 'Search definition';
+            infoIcon.onclick = (e) => {
+                e.stopPropagation();
+                const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`define "${word}"`)}`;
+                window.open(searchUrl, '_blank');
+            };
+
+            tag.appendChild(wordSpan);
+            tag.appendChild(infoIcon);
             document.getElementById('found-words').prepend(tag); // Newest first
 
             // Visuals
@@ -238,6 +258,22 @@ const game = {
         }
     },
 
+    handleTileClick(e, idx) {
+        if (this.isDragging) return;
+
+        // Trigger haptic on tap
+        if (typeof triggerHaptic === 'function') {
+            triggerHaptic(50);
+        }
+    },
+
+    touchStart(e, srcIdx) {
+        const touch = e.touches[0];
+        this.touchStartPos = { x: touch.clientX, y: touch.clientY };
+        this.isDragging = false;
+        this.dragStart(e, srcIdx);
+    },
+
     dragStart(e, srcIdx) {
         e.preventDefault();
         const tileEl = e.target;
@@ -252,6 +288,20 @@ const game = {
         const move = (ev) => {
             const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
             const cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+
+            // Check drag threshold on touch devices
+            if (ev.touches && !this.isDragging) {
+                const dx = cx - this.touchStartPos.x;
+                const dy = cy - this.touchStartPos.y;
+                if (Math.abs(dx) > this.DRAG_THRESHOLD || Math.abs(dy) > this.DRAG_THRESHOLD) {
+                    this.isDragging = true;
+                    // Trigger haptic when drag actually starts
+                    if (typeof triggerHaptic === 'function') {
+                        triggerHaptic(50);
+                    }
+                }
+            }
+
             clone.style.left = (cx - rect.width/2) + 'px';
             clone.style.top = (cy - rect.height/2) + 'px';
         };
@@ -261,6 +311,9 @@ const game = {
             document.removeEventListener('mousemove', move); document.removeEventListener('touchmove', move);
             document.removeEventListener('mouseup', end); document.removeEventListener('touchend', end);
             clone.remove();
+
+            // Reset drag state
+            this.isDragging = false;
 
             const cx = ev.changedTouches ? ev.changedTouches[0].clientX : ev.clientX;
             const cy = ev.changedTouches ? ev.changedTouches[0].clientY : ev.clientY;
