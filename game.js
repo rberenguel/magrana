@@ -1,5 +1,5 @@
-// Fibonacci sequence starting from the game needs (5, 8, 13...)
-const FIB = [5, 8, 13, 21, 34, 55, 89, 144];
+// Fibonacci sequence starting from the game needs (3, 5, 8...)
+const FIB = [3, 5, 8, 13, 21, 34, 55, 89, 144];
 
 const game = {
     dict: {},
@@ -75,12 +75,25 @@ const game = {
             this.M = 3;
         }
 
-        // Calculate Target from Fibonacci
-        // Meta 1 starts at index 0 (5)
-        // Meta 2 starts at index 1 (8)
-        // Meta 3 starts at index 2 (13)
-        // Formula: index = (metaLevel - 1) + subLevel
-        const fibIndex = (this.metaLevel - 1) + this.subLevel;
+        // Calculate Target from Fibonacci with repeating pattern
+        // Level 1-3 (meta 1): 3, 3, 3
+        // Level 4-6 (meta 2): 5, 5, 5 (first level after N/M change repeats previous)
+        // Level 7-9 (meta 3): 5, 8, 8
+        // Level 10-12 (meta 4): 8, 13, 13
+        // Pattern: when we start a new meta level, if N/M changed, repeat the previous fib
+
+        let fibIndex;
+        if (this.metaLevel === 1) {
+            // First meta level: all use index 0 (3)
+            fibIndex = 0;
+        } else if (this.subLevel === 0) {
+            // First sublevel of a new meta: repeat previous fibonacci number
+            fibIndex = Math.floor((this.metaLevel - 1) / 2);
+        } else {
+            // Normal progression
+            fibIndex = Math.floor(this.metaLevel / 2) + (this.subLevel - 1);
+        }
+
         this.targetCount = FIB[fibIndex] || FIB[FIB.length-1];
 
         // Calculate sequential level number for display
@@ -180,8 +193,10 @@ const game = {
         this.found.clear();
 
         // Retry loop to find a board with enough solutions
-        // Aim for at least targetCount + targetCount/2 solutions
-        const idealSolutions = this.targetCount + Math.floor(this.targetCount / 2);
+        // Ensure minimum of targetCount + 3 for bronze trophy potential
+        // Aim for at least targetCount + targetCount/2 solutions for variety
+        const minSolutions = this.targetCount + 3;
+        const idealSolutions = Math.max(minSolutions, this.targetCount + Math.floor(this.targetCount / 2));
         let attempts = 0;
         let bestChars = null;
         let maxSols = 0;
@@ -223,7 +238,7 @@ const game = {
             attempts++;
         }
 
-        // If we failed to find enough words after 50 tries, use the best we found
+        // If we failed to find enough words after 100 tries, use the best we found
         // and cap the target so the level is passable.
         if (this.solutions.size < this.targetCount) {
             // Recalculate solutions for the bestChars to restore state
@@ -231,6 +246,10 @@ const game = {
             this.solveInternal(bestChars);
             this.targetCount = this.solutions.size;
             document.getElementById('lbl-req').innerText = this.targetCount;
+        } else if (this.solutions.size < minSolutions) {
+            // Found enough for target but not enough for trophy margin
+            // Keep searching or accept if we're close enough
+            console.warn(`Level has ${this.solutions.size} solutions, target is ${this.targetCount}, min desired is ${minSolutions}`);
         }
 
         this.setupBoard(bestChars);
