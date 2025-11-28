@@ -180,6 +180,8 @@ const game = {
         this.found.clear();
 
         // Retry loop to find a board with enough solutions
+        // Aim for at least targetCount + targetCount/2 solutions
+        const idealSolutions = this.targetCount + Math.floor(this.targetCount / 2);
         let attempts = 0;
         let bestChars = null;
         let maxSols = 0;
@@ -187,7 +189,7 @@ const game = {
         const keys = Object.keys(this.dict).filter(k => k.length === this.N);
         if (keys.length === 0) { alert("Config Error: No words length "+this.N); return; }
 
-        while(attempts < 50) {
+        while(attempts < 100) {
             this.solutions.clear();
 
             // 1. Pick Base
@@ -207,8 +209,9 @@ const game = {
             // 3. Solve
             this.solveInternal(chars);
 
-            if (this.solutions.size >= this.targetCount) {
-                bestChars = chars; // Good board found
+            // Accept if we hit the ideal target
+            if (this.solutions.size >= idealSolutions) {
+                bestChars = chars;
                 break;
             }
 

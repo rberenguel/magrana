@@ -1,2 +1,6 @@
 .DS_Store
 claude.md
+dict/words.txt
+dict/scowl/
+dict/scowl.txt
+dict/scowl-*.txt

@@ -2,7 +2,7 @@
   "short_name": "Magrana",
   "version": "0.1.0",
   "name": "Magrana",
-  "description": "Fibonacci-based anagram puzzle game",
+  "description": "A Fibonacci-based anagram puzzle game",
   "icons": [
     {
       "src": "icon.png",
