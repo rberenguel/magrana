@@ -1,4 +1,4 @@
-# <img src="icon.png" alt="Magrana" width="64" height="64"> Magrana
+# <img src="icon.png" alt="Magrana" width="32" height="32"> Magrana
 
 > Magrana: pomegranate in Catalan.
 
