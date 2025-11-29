@@ -1,4 +1,4 @@
-const CACHE_NAME = "magrana-cache-v0.1.1";
+const CACHE_NAME = "magrana-cache-v0.1.2";
 const CACHE_FILES = [
   "./dict/dictionary.json",
   "./favicon.ico",
