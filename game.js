@@ -76,29 +76,33 @@ const game = {
       this.M = 3;
     }
 
-    // Calculate Target from Fibonacci with repeating pattern
-    // Level 1-3 (meta 1): 3, 3, 3
-    // Level 4-6 (meta 2): 5, 5, 5 (first level after N/M change repeats previous)
-    // Level 7-9 (meta 3): 5, 8, 8
-    // Level 10-12 (meta 4): 8, 13, 13
-    // Pattern: when we start a new meta level, if N/M changed, repeat the previous fib
-
-    let fibIndex;
-    if (this.metaLevel === 1) {
-      // First meta level: all use index 0 (3)
-      fibIndex = 0;
-    } else if (this.subLevel === 0) {
-      // First sublevel of a new meta: repeat previous fibonacci number
-      fibIndex = Math.floor((this.metaLevel - 1) / 2);
-    } else {
-      // Normal progression
-      fibIndex = Math.floor(this.metaLevel / 2) + (this.subLevel - 1);
-    }
-
-    this.targetCount = FIB[fibIndex] || FIB[FIB.length - 1];
-
     // Calculate sequential level number for display
     const sequentialLevel = (this.metaLevel - 1) * 3 + (this.subLevel + 1);
+
+    // New progression pattern:
+    // Levels 1-3:   3, 5, 8
+    // Levels 4-6:   5, 8, 13
+    // Levels 7-9:   5, 8, 13
+    // Levels 10-12: 8, 13, 21
+    // Levels 13-15: 8, 13, 21
+    // Then repeat 10-15 pattern (8, 13, 21) forever
+
+    let targetCount;
+    if (sequentialLevel <= 3) {
+      // First cycle: 3, 5, 8
+      targetCount = FIB[this.subLevel]; // 3, 5, 8
+    } else if (sequentialLevel <= 6) {
+      // Second cycle: 5, 8, 13
+      targetCount = FIB[this.subLevel + 1]; // 5, 8, 13
+    } else if (sequentialLevel <= 9) {
+      // Third cycle: 5, 8, 13
+      targetCount = FIB[this.subLevel + 1]; // 5, 8, 13
+    } else {
+      // Levels 10+: repeating pattern of 8, 13, 21
+      targetCount = FIB[this.subLevel + 2]; // 8, 13, 21
+    }
+
+    this.targetCount = targetCount;
 
     // UI Updates
     document.getElementById("lbl-level").innerText = sequentialLevel;
