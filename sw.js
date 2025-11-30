@@ -1,4 +1,4 @@
-const CACHE_NAME = "magrana-cache-v0.1.2";
+const CACHE_NAME = "magrana-cache-v0.1.3";
 const CACHE_FILES = [
   "./dict/dictionary.json",
   "./favicon.ico",
@@ -14,6 +14,7 @@ const CACHE_FILES = [
   "./index.html",
   "./manifest.json",
   "./style.css",
+  "./trophies.js",
 ];
 
 // Install event: opens a cache and adds the core files to it.

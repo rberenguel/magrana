@@ -27,17 +27,9 @@ const game = {
   // Trophy tracking
   trophies: [],
 
-  // Special word emojis
-  specialWords: {
-    cats: "🐈‍⬛",
-    kitten: "🐈‍⬛",
-    meow: "🐈‍⬛",
-    dogs: "🐕",
-    bark: "🐕",
-    dog: "🐕",
-    wool: "🧶",
-    clock: "🕐",
-  },
+  // Special word emojis (loaded from trophies.js)
+  specialWords:
+    typeof SPECIAL_WORD_TROPHIES !== "undefined" ? SPECIAL_WORD_TROPHIES : {},
 
   // Debug mode
   debugMode: new URLSearchParams(window.location.search).has("debug"),
