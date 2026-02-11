@@ -1,4 +1,4 @@
-const CACHE_NAME = "magrana-cache-v0.1.3";
+const CACHE_NAME = "magrana-cache-v0.1.4";
 const CACHE_FILES = [
   "./dict/dictionary.json",
   "./favicon.ico",
@@ -37,6 +37,8 @@ self.addEventListener("install", (event) => {
         }
 
         console.log("All files cached successfully.");
+        // Activate immediately, don't wait for tabs to close
+        return self.skipWaiting();
       } catch (error) {
         console.error("Service worker installation failed:", error);
       }
@@ -68,7 +70,10 @@ self.addEventListener("activate", (event) => {
             return caches.delete(cacheName);
           }
         }),
-      );
+      ).then(() => {
+        // Take control of all pages immediately
+        return self.clients.claim();
+      });
     }),
   );
 });

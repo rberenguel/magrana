@@ -43,13 +43,20 @@
 <div id="found-words"></div>
 <button id="btn-next" onclick="game.nextLevel()" style="display:none">Next Level >></button>
 
+<div id="update-banner" hidden>
+    Update available — <a href="#" id="update-link">reload</a>
+</div>
+
 <!-- Info Modal -->
 <div id="info-modal" class="modal-overlay">
     <div class="modal-content">
         <button class="modal-close" id="info-modal-close">&times;</button>
         <div class="modal-header">
             <img src="icon.png" alt="Magrana" class="modal-icon">
-            <h2>About Magrana</h2>
+            <div class="modal-title-container">
+                <h2>About Magrana</h2>
+                <span class="version-tag" id="version-display">v...</span>
+            </div>
         </div>
         <div class="modal-text">
             <p><strong>Magrana</strong> is an anagram puzzle game where you form words from a set of letters to progress through increasingly challenging levels.</p>
@@ -73,8 +80,29 @@
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker registered'))
+            .then(registration => {
+                console.log('Service Worker registered');
+
+                // Listen for new service worker installing
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    if (!newWorker) return;
+
+                    newWorker.addEventListener('statechange', () => {
+                        // New SW is active and there was a previous controller
+                        if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                            document.getElementById('update-banner').hidden = false;
+                        }
+                    });
+                });
+            })
             .catch(err => console.log('Service Worker registration failed:', err));
+    });
+
+    // Reload when user clicks the update link
+    document.getElementById('update-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.reload();
     });
 }
 </script>

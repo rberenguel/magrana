@@ -591,6 +591,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const openBtn = document.getElementById("dict-info-btn");
   const closeBtn = document.getElementById("info-modal-close");
 
+  // Fetch and display version from manifest.json
+  fetch("manifest.json")
+    .then((res) => res.json())
+    .then((manifest) => {
+      const versionDisplay = document.getElementById("version-display");
+      if (versionDisplay && manifest.version) {
+        versionDisplay.textContent = `v${manifest.version}`;
+      }
+    })
+    .catch((err) => {
+      console.warn("Could not load version from manifest:", err);
+    });
+
   openBtn.addEventListener("click", () => {
     if (typeof triggerHaptic === "function") {
       triggerHaptic(50);
